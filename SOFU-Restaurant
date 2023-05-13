@@ -1,0 +1,248 @@
+CREATE TABLE Customer 
+(CustomerID NUMBER(4) NOT NULL, 
+  Reservation_date DATE NOT NULL, 
+  username VARCHAR(20) NOT NULL, 
+  password NUMBER(16) NOT NULL, 
+  gender VARCHAR(50) NULL, 
+  FName VARCHAR(20) NOT NULL, 
+  LName VARCHAR(20) NOT NULL, 
+  MName VARCHAR(20) NOT NULL, 
+  PRIMARY KEY (CustomerID), 
+  UNIQUE (username));
+
+INSERT INTO Customer  
+VALUES (5000, TO_DATE('2023-01-04', 'YYYY-MM-DD'), 'MichaleJ@gmail.com', 1234, 'Male', 'Michale', 'Rob', 'Jackson');
+
+INSERT INTO Customer  
+VALUES (5001,	TO_DATE('2023-04-10',  'YYYY-MM-DD'), 'JamesJ@gmail.com', 2345, 'Male', 'James', 'Brown',	'Johnson');
+
+INSERT INTO Customer
+VALUES(5002, TO_DATE('2023-04-17',  'YYYY-MM-DD'), 'SusanS9@gmail.com', 9009, 'Female',	'Susan', 'Abbey', 'Smith');
+
+SELECT * 
+FROM Customer
+WHERE gender = 'Male';
+
+CREATE TABLE Food 
+(FoodID NUMBER(4) NOT NULL, 
+  food_stock VARCHAR2(100) NOT NULL, 
+  food_name VARCHAR(10) NOT NULL, 
+  food_allergies VARCHAR(50) NOT NULL, 
+  cost VARCHAR2(100) NOT NULL, 
+  PRIMARY KEY (FoodID));
+
+INSERT INTO Food
+VALUES (4000, '155 lbs', 'fries', 'potato', '$5/lb');
+
+INSERT INTO Food
+VALUES (4001, '270 lbs', 'chicken', 'meat', '$15/lb');
+
+INSERT INTO Food
+VALUES(4002, '188 lbs', 'lobster', 'shell fish', '$200/lb');
+
+SELECT food_name
+FROM Food
+WHERE food_name IN('lobster', 'chicken');
+
+CREATE TABLE Restaurant 
+( RestaurantID NUMBER(4) NOT NULL, 
+  address VARCHAR(50) NOT NULL, 
+  rent NUMBER(10,2) NOT NULL, 
+  Avg_service_speed VARCHAR2(50) NOT NULL, 
+  zip INTEGER NOT NULL, 
+  utilities_cost INTEGER NOT NULL, 
+  PRIMARY KEY (RestaurantID));
+
+INSERT INTO Restaurant 
+VALUES (2000, '81-34 Forest Hill', 2000.00, '7 minutes', 11324, 8000.00);
+
+INSERT INTO Restaurant 
+VALUES (2001, '90-11 Queens Street', 5000.00, '10 minutes', 12345, 8000.00);
+
+INSERT INTO Restaurant 
+VALUES (2002, '55-55 Jamaica Ave', 6000.00, '20 minutes', 11546, 9000.00);
+
+SELECT RestaurantID, address,rent, Avg_service_speed, zip, utilities_cost
+FROM Restaurant
+WHERE zip =11324;
+
+CREATE TABLE Customer_phone 
+(CustomerID NUMBER(4) NOT NULL, 
+  phone VARCHAR2(12) NOT NULL, 
+  PRIMARY KEY (CustomerID, phone), 
+  FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID));
+
+INSERT INTO Customer_phone
+VALUES (5000, '567-098-2345');
+
+INSERT INTO Customer_phone
+VALUES (5001, '345-007-7890');
+
+INSERT INTO Customer_phone
+VALUES (5002, '234-789-0087');
+
+SELECT * 
+FROM Customer_phone
+WHERE phone IN('567-098-2345', '345-007-7890', '234-789-0087');
+
+CREATE TABLE Employee 
+(EmployeeID NUMBER(4) NOT NULL, 
+  RestaurantID NUMBER(4) NOT NULL, 
+  Salary NUMBER(10,2) NOT NULL, 
+  DOB DATE NOT NULL, 
+  Address VARCHAR(50) NOT NULL, 
+  Jobtitle VARCHAR(30) NOT NULL, 
+  date_employed DATE NOT NULL, 
+  postal_code VARCHAR(5) NOT NULL, 
+  gender VARCHAR(10), 
+  FName VARCHAR(30) NOT NULL, 
+  MName VARCHAR(30) NOT NULL, 
+  LName VARCHAR(30) NOT NULL, 
+  PRIMARY KEY (EmployeeID), 
+  FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID));
+
+INSERT INTO Employee 
+VALUES (1000, 2000, 50000.00, TO_DATE('1981-03-01', 'YYYY-MM-DD'), '100-12 James Street', 'Chef', TO_DATE('02-Feb-2020', 'DD-MON-YYYY'), '11324', 'Male', 'Micheal', 'Thomas', 'Jack');
+
+INSERT INTO Employee 
+VALUES (1001, 2001,	75000.00, TO_DATE('1971-03-08', 'YYYY-MM-DD'), '319-81 Kew Gardens', 'Master Chef', TO_DATE('02-Feb-2022', 'DD-MON-YYYY'), '11456', 'Male', 'Akeem', 'Eddy', 'Wright');
+
+INSERT INTO Employee 
+VALUES (1002, 2002,	100000.00, TO_DATE('1972-10-10', 'YYYY-MM-DD'), '10-11 Garvey Street', 'Manager', TO_DATE('02-May-2023','DD-MON-YYYY'), '11345', 'Female',	'Mary', 'Ann', 'Lee');
+
+SELECT FName, Jobtitle, Salary
+FROM Employee
+WHERE Salary <= 75000.00;
+
+CREATE TABLE Orders 
+(OrderID NUMBER(4) NOT NULL, 
+  CustomerID NUMBER(4) NOT NULL, 
+  RestaurantID NUMBER(4) NOT NULL, 
+  payment_method VARCHAR2(50) NOT NULL, 
+  entry_time VARCHAR2(50) NOT NULL, 
+  total NUMBER(10,2) NOT NULL, 
+  order_type VARCHAR2(25) NOT NULL, 
+  counter_tips NUMBER(10,2) NOT NULL, 
+  delivery_tip NUMBER(10,2) NOT NULL, 
+  delivery_timestamp DATE NOT NULL, 
+  PRIMARY KEY (OrderID), 
+  FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID), 
+  FOREIGN KEY (RestaurantID) REFERENCES Restaurant(RestaurantID));
+
+INSERT INTO Orders 
+VALUES(6000, 5000, 2000, 'Card', '12:30 PM', 200.00, 'Delivery', 50.00, 15.00, TO_DATE('2023-01-04 14:30:00', 'YYYY-MM-DD HH24:MI:SS'));
+
+INSERT INTO Orders 
+VALUES(6001, 5001, 2001, 'Paypal', '1:00 PM', 270.00, 'Takeout', 65.00, 20.00, TO_DATE('2023-04-29 18:45:00', 'YYYY-MM-DD HH24:MI:SS'));
+
+INSERT INTO Orders 
+VALUES(6002, 5002, 2002, 'Cash', '9:00 PM',	300.00,	'Takeout', 75.00, 25.00, TO_DATE('2023-04-30 13:00:00', 'YYYY-MM-DD HH24:MI:SS'));
+
+SELECT OrderID, CustomerID, RestaurantID, payment_method, entry_time, total, order_type, counter_tips, delivery_tip, delivery_timestamp
+FROM Orders
+WHERE payment_method = 'Card';
+
+CREATE TABLE Delivery_Info 
+( DeliveryID NUMBER(4) NOT NULL, 
+  CustomerID NUMBER(4) NOT NULL, 
+  delivery_address VARCHAR(50) NOT NULL, 
+  postal_code NUMBER(5) NOT NULL, 
+  blacklist VARCHAR(50) NOT NULL, 
+  PRIMARY KEY (DeliveryID), 
+  FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID));
+
+INSERT INTO Delivery_Info 
+VALUES(7000, 5000, '21- Melgrove Drive', 12345, 'Brendhan Drive');
+
+INSERT INTO Delivery_Info 
+VALUES(7001, 5001, '212- Street Lane', 12245, 'Willow Street');
+
+INSERT INTO Delivery_Info 
+VALUES(7002, 5002, '111- Velmont Road', 14258, 'Tommy Drive');    
+
+SELECT DeliveryID, delivery_address, postal_code
+FROM Delivery_Info
+WHERE CustomerID = 5001;
+
+CREATE TABLE Item 
+(ItemID NUMBER(4) NOT NULL, 
+  OrderID NUMBER(4) NOT NULL, 
+  FoodID NUMBER(4) NOT NULL, 
+  Quantity NUMBER(10,2) NOT NULL, 
+  PRIMARY KEY (ItemID), 
+  FOREIGN KEY (OrderID) REFERENCES Orders(OrderID), 
+  FOREIGN KEY (FoodID) REFERENCES Food(FoodID));
+
+INSERT INTO Item 
+VALUES(3000, 6000, 4000, 5);
+
+INSERT INTO Item 
+VALUES(3001, 6001, 4001, 10);
+
+INSERT INTO Item 
+VALUES(3002, 6002, 4002, 9);
+
+SELECT ItemID, OrderID, FoodID, Quantity
+FROM Item
+WHERE Quantity >= 5; 
+
+CREATE TABLE Employee_phone 
+(EmployeeID NUMBER(4) NOT NULL, 
+  phone VARCHAR2(12) NOT NULL, 
+  PRIMARY KEY (EmployeeID, phone), 
+  FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID));
+
+INSERT INTO Employee_phone 
+VALUES(1000, '347-873-3687');
+
+INSERT INTO Employee_phone 
+VALUES(1001, '347-838-9191');
+
+INSERT INTO Employee_phone 
+VALUES(1002, '347-111-7342');
+
+SELECT * 
+FROM Employee_phone
+WHERE phone IN('347-873-3687', '347-838-9191', '347-111-7342');
+
+DELETE 
+FROM Delivery_Info 
+WHERE CustomerID = 5000;
+
+DELETE
+FROM Employee_phone
+WHERE phone = '347-873-3687';
+
+DELETE 
+FROM Item
+WHERE FoodID = 4000;
+
+DELETE FROM Orders
+WHERE RestaurantID IN (
+SELECT RestaurantID
+FROM Restaurant
+WHERE address = '81-34 Forest Hill');
+
+DELETE
+FROM Customer_phone
+WHERE phone = '234-789-0087';
+
+DELETE
+FROM Employee
+WHERE EmployeeID = 1000;
+
+DELETE
+FROM Delivery_Info
+WHERE DeliveryID = 7000;
+
+DELETE 
+FROM Item
+ WHERE OrderID IN(SELECT OrderID FROM Orders WHERE payment_method = 'Card');
+
+DELETE 
+FROM Orders
+ WHERE payment_method = 'Card';
+
+DELETE
+FROM Item
+WHERE ItemID = 3000;
